@@ -1,100 +1,76 @@
 package com.company.model;
 
-import java.util.Arrays;
+import com.company.FlowFreeAlgo;
+
+import java.awt.*;
 import java.util.Random;
 
-import com.company.util.ConsoleColors;
+public class Individual {
+    private static final int FITNESS_NOT_SET = -1;
 
-//Individual class
-public class Individual implements Cloneable{
-
-    private int geneLength;
-    private int fitness = 0;
+    private int n;
+    protected int geneLength;
     private int[] genes;
+    private int fitness;
 
-    public Individual(int geneLength) {
-
-        //Initialization
+    public Individual(int geneLength, int n, Point[] points) {
+        this.n = n;
         this.geneLength = geneLength;
         this.genes = new int[geneLength];
 
         Random rn = new Random();
 
         //Set genes randomly for each individual
-        for (int i = 0; i < genes.length; i++) {
-            genes[i] = Math.abs(rn.nextInt() % 2);
+        for (int i = 0; i < genes.length; ++i) {
+            this.genes[i] = rn.nextInt(this.n);
         }
 
-        fitness = 0;
-    }
-
-    //Calculate fitness
-    public void calcFitness() {
-        fitness = 0;
-        for (int i = 0; i < genes.length; i++) {
-            if (genes[i] == 1) {
-                ++fitness;
-            }
+        //put right point in genes
+        for (int i = 0; i < points.length; i++) {
+            this.genes[points[i].y*n+points[i].x] = (int) i/2;
         }
-    }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        Individual individual = (Individual)super.clone();
-        individual.genes = new int[geneLength];
-        for(int i = 0; i < individual.genes.length; i++){
-            individual.genes[i] = this.genes[i];
-        }
-        return individual;
-    }
-
-    @Override
-    public String toString() {
-        //without colors
-        return "[genes=" + Arrays.toString(genes) + "]";
-    }
-
-    public String toStringColor() {
-        //with colors
-        String genesString = "[genes=[";
-        int increment=0;
-        for(int gene:genes) {
-            //print gene
-            if(gene == 0) genesString += ConsoleColors.BLACK_BOLD + ConsoleColors.RED_BACKGROUND_BRIGHT + gene + ConsoleColors.RESET;
-            if(gene == 1) genesString += ConsoleColors.BLACK_BOLD + ConsoleColors.GREEN_BACKGROUND_BRIGHT + gene + ConsoleColors.RESET;
-            //print comma
-            if(increment<genes.length-1) genesString += ", ";
-
-            increment++;
-        }
-        genesString += "]]";
-        return genesString;
-    }
-
-    //Getters and Setters
-
-    public int getGeneLength() {
-        return geneLength;
-    }
-
-    public void setGeneLength(int geneLength) {
-        this.geneLength = geneLength;
-    }
-
-    public int getFitness() {
-        return fitness;
-    }
-
-    public void setFitness(int fitness) {
-        this.fitness = fitness;
+        this.fitness = -1;
     }
 
     public int[] getGenes() {
         return genes;
     }
 
-    public void setGenes(int[] genes) {
-        this.genes = genes;
+    public int getN() {
+        return n;
     }
 
+    public int getSingleGene(int index) {
+        return genes[index];
+    }
+
+    public void setSingleGene(int index, int value) {
+        genes[index] = value;
+        fitness = 0;
+    }
+
+    public int getFitness() {
+        if (fitness == FITNESS_NOT_SET) {
+            fitness = FlowFreeAlgo.getFitness(this);
+        }
+        return fitness;
+    }
+
+
+    @Override
+    public String toString() {
+        //without colors
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[genes=\n");
+        for (int i = 0; i < geneLength; i++) {
+            if(i%n == 0 && i!=0 ) {
+                stringBuilder.append("\n");
+            }
+            stringBuilder.append(genes[i]);
+            stringBuilder.append(", ");
+        }
+        stringBuilder.append("]");
+        return stringBuilder.toString();
+    }
 }

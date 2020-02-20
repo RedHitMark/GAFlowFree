@@ -1,142 +1,50 @@
 package com.company.model;
 
-//Population class
+import java.awt.*;
+import java.util.ArrayList;
+
 public class Population {
 
-    private int popSize;
-    private Individual[] individuals;
+    private final Point[] points;
+    private int size;
     private int geneLength;
-    private int fittestScore = 0;
+    private int n;
 
+    private ArrayList<Individual> individuals;
 
-
-    /**
-     * @purpose Initialize population
-     * @param popSize is the population size
-     * @param geneLength is the number of genes an individual will have
-     */
-    public Population(int popSize, int geneLength) {
-        super();
-        this.popSize = popSize;
+    public Population(int size, int geneLength, int n, Point[] points, boolean createNew) {
         this.geneLength = geneLength;
-        this.individuals = new Individual[popSize];
+        this.n = n;
+        this.points = points;
 
-        //Create a first population pool
-        for (int i = 0; i < popSize; i++) {
-            individuals[i] = new Individual(geneLength);
+        individuals = new ArrayList<>();
+        if (createNew) {
+            createNewPopulation(size);
         }
     }
 
-    //Get the fittest individual and update fittest score
-    public Individual selectFittest() {
-        int maxFit = Integer.MIN_VALUE;
-        int maxFitIndex = 0;
-        for (int i = 0; i < individuals.length; i++) {
-            if (maxFit <= individuals[i].getFitness()) {
-                maxFit = individuals[i].getFitness();
-                maxFitIndex = i;
-            }
-        }
-        //update fittest score
-        fittestScore = individuals[maxFitIndex].getFitness();
-
-        //try to return the fittest individual
-        try {
-            return (Individual) individuals[maxFitIndex].clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    //Get the second most fittest individual
-    public Individual selectSecondFittest() {
-        int maxFit1 = 0;
-        int maxFit2 = 0;
-        for (int i = 0; i < individuals.length; i++) {
-            if (individuals[i].getFitness() > individuals[maxFit1].getFitness()) {
-                maxFit2 = maxFit1;
-                maxFit1 = i;
-            } else if (individuals[i].getFitness() > individuals[maxFit2].getFitness()) {
-                maxFit2 = i;
-            }
-        }
-        try {
-            return (Individual) individuals[maxFit2].clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    //Get index of least fittest individual
-    public int getLeastFittestIndex() {
-        int minFitVal = Integer.MAX_VALUE;
-        int minFitIndex = 0;
-        for (int i = 0; i < individuals.length; i++) {
-            if (minFitVal >= individuals[i].getFitness()) {
-                minFitVal = individuals[i].getFitness();
-                minFitIndex = i;
-            }
-        }
-        return minFitIndex;
-    }
-
-    //Get index of the fittest individual
-    public int getFittestIndex() {
-        int maxFit = Integer.MIN_VALUE;
-        int maxFitIndex = 0;
-        for (int i = 0; i < individuals.length; i++) {
-            if (maxFit <= individuals[i].getFitness()) {
-                maxFit = individuals[i].getFitness();
-                maxFitIndex = i;
-            }
-        }
-        return maxFitIndex;
-    }
-
-    //Calculate fitness of each individual
-    public void calculateFitness() {
-        for (int i = 0; i < individuals.length; i++) {
-            individuals[i].calcFitness();
-        }
-        selectFittest();
-    }
-
-    //Getters and Setters
-
-    public int getPopSize() {
-        return popSize;
-    }
-
-    public void setPopSize(int popSize) {
-        this.popSize = popSize;
-    }
-
-    public Individual[] getIndividuals() {
+    public ArrayList<Individual> getIndividuals() {
         return individuals;
     }
 
-    public void setIndividuals(Individual[] individuals) {
-        this.individuals = individuals;
+    public Individual getIndividual(int index) {
+        return individuals.get(index);
     }
 
-    public int getGeneLength() {
-        return geneLength;
+    public Individual getFittest() {
+        Individual fittest = individuals.get(0);
+        for (int i = 0; i < individuals.size(); i++) {
+            if (fittest.getFitness() <= getIndividual(i).getFitness()) {
+                fittest = getIndividual(i);
+            }
+        }
+        return fittest;
     }
 
-    public void setGeneLength(int geneLength) {
-        this.geneLength = geneLength;
+    private void createNewPopulation(int size) {
+        for (int i = 0; i < size; i++) {
+            Individual newIndividual = new Individual(this.geneLength, this.n, this.points);
+            individuals.add(i, newIndividual);
+        }
     }
-
-
-    public int getFittestScore() {
-        return fittestScore;
-    }
-
-
-    public void setFittestScore(int fittestScore) {
-        this.fittestScore = fittestScore;
-    }
-
 }
