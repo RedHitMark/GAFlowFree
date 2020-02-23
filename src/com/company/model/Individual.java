@@ -10,30 +10,32 @@ public class Individual {
 
     private int n;
     protected int geneLength;
-    private int[] genes;
+    private int[][] genes;
     private int fitness;
 
     public Individual(int geneLength, int n, Point[] points) {
         this.n = n;
         this.geneLength = geneLength;
-        this.genes = new int[geneLength];
+        this.genes = new int[n][n];
 
         Random rn = new Random();
 
         //Set genes randomly for each individual
-        for (int i = 0; i < genes.length; ++i) {
-            this.genes[i] = rn.nextInt(this.n);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; j++) {
+                this.genes[i][j] = rn.nextInt(this.n);
+            }
         }
 
         //put right point in genes
         for (int i = 0; i < points.length; i++) {
-            this.genes[points[i].y*n+points[i].x] = (int) i/2;
+            this.genes[points[i].y][points[i].x] = (int) i/2;
         }
 
         this.fitness = -1;
     }
 
-    public int[] getGenes() {
+    public int[][] getGenes() {
         return genes;
     }
 
@@ -41,12 +43,12 @@ public class Individual {
         return n;
     }
 
-    public int getSingleGene(int index) {
-        return genes[index];
+    public int getSingleGene(int i, int j) {
+        return genes[i][j];
     }
 
-    public void setSingleGene(int index, int value) {
-        genes[index] = value;
+    public void setSingleGene(int i, int j, int value) {
+        genes[i][j] = value;
         fitness = 0;
     }
 
@@ -63,12 +65,11 @@ public class Individual {
         //without colors
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[genes=\n");
-        for (int i = 0; i < geneLength; i++) {
-            if(i%n == 0 && i!=0 ) {
-                stringBuilder.append("\n");
+        for (int i = 0; i < genes.length; i++) {
+            for (int j = 0; j < genes[i].length; j++) {
+                stringBuilder.append(genes[i][j]).append(" ");
             }
-            stringBuilder.append(genes[i]);
-            stringBuilder.append(", ");
+            stringBuilder.append("\n");
         }
         stringBuilder.append("]");
         return stringBuilder.toString();
