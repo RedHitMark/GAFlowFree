@@ -1,5 +1,7 @@
 package com.company.GUI;
 
+import com.company.FlowFreeAlgo;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,24 +24,35 @@ public class MainPanel extends JPanel {
     public MainPanel(int n) {
         GridLayout experimentLayout = new GridLayout(n+1,n);
 
+        buttons = new JButton[n][n];
+
         selection = new int[n][n];
+        for (int i = 0; i < selection.length; i++) {
+            for (int j = 0; j < selection[i].length; j++) {
+                selection[i][j] = -1;
+            }
+        }
         this.n = n;
 
         this.setLayout(experimentLayout);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                JButton button = new JButton(i + " " + j);
-                button.setBackground(Color.BLACK);
+                buttons[i][j] = new JButton(i + " " + j);
+                buttons[i][j].setBackground(Color.WHITE);
 
                 int finalI = i;
                 int finalJ = j;
-                button.addActionListener(new ActionListener() {
+                buttons[i][j].addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        selection[finalI][finalJ] =  selection[finalI][finalJ] == (n-1)? 0 : selection[finalI][finalJ] + 1;
-                        button.setBackground(COLORS[selection[finalI][finalJ]]);
+                        selection[finalI][finalJ] =  selection[finalI][finalJ] == (n-1)? -1 : selection[finalI][finalJ] + 1;
+                        if(selection[finalI][finalJ] == -1) {
+                            buttons[finalI][finalJ].setBackground(Color.WHITE);
+                        } else {
+                            buttons[finalI][finalJ].setBackground(COLORS[selection[finalI][finalJ]]);
+                        }
                     }
                 });
-                this.add(button);
+                this.add(buttons[i][j]);
             }
         }
 
@@ -47,11 +60,39 @@ public class MainPanel extends JPanel {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int numberOfGenes = n * n;
+                int populationSize = 100;
+
+                Point[] points = new Point[n*2];
+
                 for (int i = 0; i < selection.length; i++) {
-                    System.out.println(Arrays.toString(selection[i]));
+                    for (int j = 0; j < selection[i].length; j++) {
+                        if(selection[i][j] != -1) {
+                            if(points[selection[i][j]*2] == null) {
+                                points[selection[i][j]*2] = new Point(j, i);
+                            } else {
+                                points[(selection[i][j]*2) + 1 ] = new Point(j, i);
+                            }
+                        }
+                    }
                 }
+
+                //System.out.println(Arrays.toString(points));
+
+                FlowFreeAlgo flowFreeAlgo = new FlowFreeAlgo();
+                selection = flowFreeAlgo.runAlgorithm(populationSize, numberOfGenes, n, points);
+
+                drawSolution();
             }
         });
         this.add(startButton);
+    }
+
+    private void drawSolution() {
+        for (int i = 0; i < selection.length; i++) {
+            for (int j = 0; j < selection[i].length; j++) {
+                buttons[i][j].setBackground(COLORS[selection[i][j]]);
+            }
+        }
     }
 }

@@ -26,7 +26,7 @@ public class FlowFreeAlgo {
     private int populationSize;
 
 
-    public boolean runAlgorithm(int populationSize, int geneLength, int n, Point[] points) {
+    public int[][] runAlgorithm(int populationSize, int geneLength, int n, Point[] points) {
         this.populationSize = populationSize;
         this.maxFitness = n;
         this.n = n;
@@ -49,7 +49,7 @@ public class FlowFreeAlgo {
         System.out.println("Generation: " + generationCount);
         System.out.println("Genes: ");
         System.out.println(myPop.getFittest());
-        return true;
+        return myPop.getFittest().getGenes();
     }
 
     public Population evolvePopulation(Population pop) {

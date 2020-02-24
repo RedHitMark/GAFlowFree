@@ -23,21 +23,8 @@ public class Main {
         points[8]=new Point(4,1);
         points[9]=new Point(3,4);
 
-        int numberOfGenes = 25;
-        int n = 5;
-        //Number of individuals
-        int populationSize = 100;
 
-        *//*int[][] genes = new int[][] {
-                {0, 1, 1, 4, 3},
-                {0, 1, 2, 3, 4},
-                {0, 1, 0, 3, 4},
-                {0, 1, 2, 3, 4},
-                {0, 0, 2, 4, 4}
-        };
-        boolean[][] visited = new boolean[n][n];
-        System.out.println(findLongestPath(genes, visited, 0, 2, 1, 3, 1, 0, 0) + " token: " + 4);
-*//*
+
         flowFreeAlgo.runAlgorithm(populationSize, numberOfGenes, n, points);*/
     }
 
