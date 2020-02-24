@@ -32,7 +32,7 @@ public class Individual {
             this.genes[points[i].y][points[i].x] = (int) i/2;
         }
 
-        this.fitness = -1;
+        this.fitness = FITNESS_NOT_SET;
     }
 
     public int[][] getGenes() {
@@ -49,7 +49,7 @@ public class Individual {
 
     public void setSingleGene(int i, int j, int value) {
         genes[i][j] = value;
-        fitness = 0;
+        fitness = FITNESS_NOT_SET;
     }
 
     public int getFitness() {

@@ -9,7 +9,7 @@ public class FlowFreeAlgo {
     private static final double uniformRate = 0.5;
     private static final double mutationRate = 0.025;
     private static final int tournamentSize = 10;
-    private static final boolean elitism = false;
+    private static final boolean elitism = true;
 
     //Using for fitness check
     private static final int RIGHT = 1;
@@ -126,101 +126,75 @@ public class FlowFreeAlgo {
         int fitness = 0;
 
         int n = individual.getN();
+        int[][] genes = individual.getGenes();
+        /*genes = new int[][] {
+                {0, 1, 1, 4, 3},
+                {0, 1, 2, 3, 4},
+                {0, 1, 0, 3, 0},
+                {0, 1, 2, 3, 4},
+                {0, 0, 2, 4, 1}
+        };*/
 
         for (int i = 0; i < n; i++) {
             Point startingPoint = points[i*2];
             Point endingPoint = points[(i*2)+1];
 
-            if(isPath(individual.getGenes(), individual.getN(), 0, 3, 2)) {
+            boolean[][] visited = new boolean[n][n];
+
+            //System.out.println(findLongestPath(genes, visited, startingPoint.x, startingPoint.y, endingPoint.x, endingPoint.y, i, 0, 0) + " token: " + i);
+            if(findLongestPath(genes, visited, startingPoint.y, startingPoint.x, endingPoint.x, endingPoint.y, i, 0, 0) > 0) {
                 fitness++;
             }
         }
         return fitness;
     }
 
-    // method for finding and printing
-    // whether the path exists or not
-    public static boolean isPath(int matrix[][], int n, int start, int end, int traversable) {
-        // defining visited array to keep
-        // track of already visited indexes
-        boolean visited[][] = new boolean[n][n];
-
-        // flag to indicate whether the path exists or not
-        boolean flag=false;
-
-        for(int i=0;i<n;i++) {
-            for(int j=0;j<n;j++) {
-                // if matrix[i][j] is source
-                // and it is not visited
-                if(matrix[i][j]==start && !visited[i][j])
-
-                    // starting from i, j and then finding the path
-                    if(isPath(matrix, i, j, start, end, traversable, visited))
-                    {
-                        flag=true; // if path exists
-                        break;
-                    }
-            }
+    static int findLongestPath(int[][] mat, boolean[][] visited, int i, int j, int x, int y, int token, int max_dist, int dist) {
+        // destination not possible from current cell
+        if (mat[i][j] != token) {
+            return 0;
         }
 
-        return flag;
-    }
-
-
-    // method for checking boundries
-    public static boolean isSafe(int i, int j, int matrix[][]) {
-
-        if(i>=0 && i<matrix.length && j>=0
-                && j<matrix[0].length)
-            return true;
-        return false;
-    }
-
-    // Returns true if there is a path from a source (a
-    // cell with value 1) to a destination (a cell with
-    // value 2)
-    public static boolean isPath(int matrix[][], int i, int j, int start, int end, int traversable,boolean visited[][]){
-
-        // checking the boundries, walls and
-        // whether the cell is unvisited
-        if(isSafe(i, j, matrix) && (matrix[i][j]==traversable || matrix[i][j]==end || matrix[i][j]==start) && !visited[i][j]) {
-            // make the cell visited
-            visited[i][j]=true;
-
-            // if the cell is the required
-            // destination then return true
-            if(matrix[i][j]==end)
-                return true;
-
-            // traverse up
-            boolean up = isPath(matrix, i-1, j, start, end, traversable, visited);
-
-            // if path is found in up direction return true
-            if(up)
-                return true;
-
-            // traverse left
-            boolean left = isPath(matrix, i, j-1, start, end, traversable, visited);
-
-            // if path is found in left direction return true
-            if(left)
-                return true;
-
-            //traverse down
-            boolean down = isPath(matrix, i+1, j, start, end, traversable, visited);
-
-            // if path is found in down direction return true
-            if(down)
-                return true;
-
-            // traverse right
-            boolean right = isPath(matrix, i, j+1, start, end, traversable, visited);
-
-            // if path is found in right direction return true
-            if(right)
-                return true;
+        // if destination is found, update max_dist
+        if (i == y && j == x) {
+            return Math.max(dist, max_dist);
         }
-        return false; // no path has been found
+
+        // set (i, j) cell as visited
+        visited[i][j] = true;
+
+        // go to bottom cell
+        if (isValid(i + 1, j, mat.length) && isSafe(mat, visited, token, i + 1, j)) {
+            return findLongestPath(mat, visited, i + 1, j, x, y, token, max_dist, dist + 1);
+        }
+        // go to right cell
+        if (isValid(i, j + 1, mat.length) && isSafe(mat, visited, token, i, j + 1)) {
+            return findLongestPath(mat, visited, i, j + 1, x, y, token, max_dist, dist + 1);
+        }
+
+        // go to top cell
+        if (isValid(i - 1, j, mat.length) && isSafe(mat, visited, token, i - 1, j)) {
+            return findLongestPath(mat, visited, i - 1, j, x, y, token, max_dist, dist + 1);
+        }
+
+        // go to left cell
+        if (isValid(i, j - 1, mat.length) && isSafe(mat, visited, token, i, j - 1)) {
+            return findLongestPath(mat, visited, i, j - 1, x, y, token, max_dist, dist + 1);
+        }
+
+        return 0;
+    }
+
+    // check if it is possible to go to position (x, y) from
+    // current position. The function returns false if the cell
+    // has value 0 or it is already visited.
+    static boolean isSafe(int[][] mat, boolean[][] visited, int token, int x, int y) {
+        return mat[x][y] == token && !visited[x][y];
+    }
+
+    // if not a valid position, return false
+    static boolean isValid(int x, int y, int n) {
+        return x < n && y < n && x >= 0 && y >= 0;
     }
 
     /*public static int getFitness(Individual individual) {

@@ -21,8 +21,72 @@ public class Main {
         int numberOfGenes = 25;
         int n = 5;
         //Number of individuals
-        int populationSize = 1000;
+        int populationSize = 100;
 
+        /*int[][] genes = new int[][] {
+                {0, 1, 1, 4, 3},
+                {0, 1, 2, 3, 4},
+                {0, 1, 0, 3, 4},
+                {0, 1, 2, 3, 4},
+                {0, 0, 2, 4, 4}
+        };
+        boolean[][] visited = new boolean[n][n];
+        System.out.println(findLongestPath(genes, visited, 0, 2, 1, 3, 1, 0, 0) + " token: " + 4);
+*/
         flowFreeAlgo.runAlgorithm(populationSize, numberOfGenes, n, points);
+    }
+
+
+    // Find Longest Possible Route in a Matrix mat from source cell (0, 0) to
+    // destination cell (x, y)
+    // max_dist is passed by reference and stores length of longest path from
+    // source to destination found so far dist maintains length of path from
+    // source cell to current cell (i, j)
+    static int findLongestPath(int[][] mat, boolean[][] visited, int i, int j, int x, int y, int token, int max_dist, int dist) {
+        // destination not possible from current cell
+        if (mat[i][j] != token) {
+            return 0;
+        }
+
+        // if destination is found, update max_dist
+        if (i == y && j == x) {
+            return Math.max(dist, max_dist);
+        }
+
+        // set (i, j) cell as visited
+        visited[i][j] = true;
+
+        // go to bottom cell
+        if (isValid(i + 1, j, mat.length) && isSafe(mat, visited, token, i + 1, j)) {
+            return findLongestPath(mat, visited, i + 1, j, x, y, token, max_dist, dist + 1);
+        }
+        // go to right cell
+        if (isValid(i, j + 1, mat.length) && isSafe(mat, visited, token, i, j + 1)) {
+            return findLongestPath(mat, visited, i, j + 1, x, y, token, max_dist, dist + 1);
+        }
+
+        // go to top cell
+        if (isValid(i - 1, j, mat.length) && isSafe(mat, visited, token, i - 1, j)) {
+            return findLongestPath(mat, visited, i - 1, j, x, y, token, max_dist, dist + 1);
+        }
+
+        // go to left cell
+        if (isValid(i, j - 1, mat.length) && isSafe(mat, visited, token, i, j - 1)) {
+            return findLongestPath(mat, visited, i, j - 1, x, y, token, max_dist, dist + 1);
+        }
+
+        return 0;
+    }
+
+    // check if it is possible to go to position (x, y) from
+    // current position. The function returns false if the cell
+    // has value 0 or it is already visited.
+    static boolean isSafe(int[][] mat, boolean[][] visited, int token, int x, int y) {
+        return mat[x][y] == token && !visited[x][y];
+    }
+
+    // if not a valid position, return false
+    static boolean isValid(int x, int y, int n) {
+        return x < n && y < n && x >= 0 && y >= 0;
     }
 }
