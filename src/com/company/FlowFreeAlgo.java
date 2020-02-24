@@ -4,19 +4,13 @@ import com.company.model.Individual;
 import com.company.model.Population;
 
 import java.awt.*;
+import java.util.Random;
 
 public class FlowFreeAlgo {
     private static final double uniformRate = 0.5;
     private static final double mutationRate = 0.025;
     private static final int tournamentSize = 10;
-    private static final boolean elitism = true;
-
-    //Using for fitness check
-    private static final int RIGHT = 1;
-    private static final int LEFT = 2;
-    private static final int UP = 3;
-    private static final int DOWN = 4;
-    private static final int NOT_POSSIBLE = -1;
+    private static final boolean elitism = false;
 
 
     private int maxFitness;
@@ -83,7 +77,7 @@ public class FlowFreeAlgo {
 
     private Individual crossover(Individual indiv1, Individual indiv2) {
         Individual newSol = new Individual(geneLength, n, points);
-        for (int i = 0; i < newSol.getGenes().length; i++) {
+        /*for (int i = 0; i < newSol.getGenes().length; i++) {
             for (int j = 0; j < newSol.getGenes()[i].length; j++) {
                 if (Math.random() <= uniformRate) {
                     newSol.setSingleGene(i, j, indiv1.getSingleGene(i, j));
@@ -91,15 +85,31 @@ public class FlowFreeAlgo {
                     newSol.setSingleGene(i, j, indiv2.getSingleGene(i, j));
                 }
             }
-        }
-
-        /*for (int i = 0; i < newSol.getGenes().length; i++) {
-            for (int j = 0; j < newSol.getGenes()[i].length; j++) {
-                indiv1indiv1.colorsDone
-            }
         }*/
+
+        for (int i = 0; i < n; i++) {
+            if(indiv1.colorsDone[i] && indiv2.colorsDone[i]) {
+                if (Math.random() <= uniformRate) {
+                    newSol = copyGenes(newSol, indiv1, i);
+                } else {
+                    newSol = copyGenes(newSol, indiv2, i);
+                }
+            } else if(indiv1.colorsDone[i]) {
+                newSol = copyGenes(newSol, indiv1, i);
+            } else if (indiv2.colorsDone[i]) {
+                newSol = copyGenes(newSol, indiv2, i);
+            } else {
+                if (Math.random() <= uniformRate) {
+                    newSol = copyGenes(newSol, indiv1, i);
+                } else {
+                    newSol = copyGenes(newSol, indiv2, i);
+                }
+            }
+        }
         return newSol;
     }
+
+
 
     private void mutate(Individual indiv) {
         /*for (int i = 0; i < indiv.getDefaultGeneLength(); i++) {
@@ -137,13 +147,6 @@ public class FlowFreeAlgo {
 
         int n = individual.getN();
         int[][] genes = individual.getGenes();
-        /*genes = new int[][] {
-                {0, 1, 1, 4, 3},
-                {0, 1, 2, 3, 4},
-                {0, 1, 0, 3, 0},
-                {0, 1, 2, 3, 4},
-                {0, 0, 2, 4, 1}
-        };*/
 
         for (int i = 0; i < n; i++) {
             Point startingPoint = points[i*2];
@@ -151,7 +154,6 @@ public class FlowFreeAlgo {
 
             boolean[][] visited = new boolean[n][n];
 
-            //System.out.println(findLongestPath(genes, visited, startingPoint.x, startingPoint.y, endingPoint.x, endingPoint.y, i, 0, 0) + " token: " + i);
             if(findLongestPath(genes, visited, startingPoint.y, startingPoint.x, endingPoint.x, endingPoint.y, i, 0, 0) > 0) {
                 fitness++;
                 individual.colorsDone[i] = true;
@@ -208,71 +210,39 @@ public class FlowFreeAlgo {
         return x < n && y < n && x >= 0 && y >= 0;
     }
 
-    /*public static int getFitness(Individual individual) {
-        int fitness = 0;
+    static Individual copyGenes(Individual newSol, Individual oldSol, int token) {
+        int[][] oldGenes = oldSol.getGenes();
 
-        int n = individual.getN();
-
-        for (int i = 0; i < n; i++) {
-            Point startingPoint = points[i*2];
-            Point endingPoint = points[(i*2)+1];
-
-            int prevDir = NOT_POSSIBLE;
-            int nextDir = NOT_POSSIBLE;
-            Point p = new Point(startingPoint.x, startingPoint.y);
-            do {
-                //System.out.println(i + " " + p.toString());
-                nextDir = findNextDir(individual.getGenes(), n, p, i, prevDir);
-
-                switch (nextDir){
-                    case RIGHT:
-                        p.translate(1, 0);
-                        break;
-                    case LEFT:
-                        p.translate(-1, 0);
-                        break;
-                    case UP:
-                        p.translate(0, 1);
-                        break;
-                    case DOWN:
-                        p.translate(0, -1);
-                        break;
+        for (int i = 0; i < oldGenes.length; i++) {
+            for (int j = 0; j < oldGenes[i].length; j++) {
+                if(oldGenes[i][j] == token) {
+                    newSol.setSingleGene(i, j, token);
                 }
-                prevDir = nextDir;
-            } while (nextDir != NOT_POSSIBLE && !endingPoint.equals(p));
-
-
-            if(endingPoint.equals(p)) {
-                fitness++;
             }
         }
-        return fitness;
+
+        return newSol;
     }
 
-    protected static int findNextDir(int[] genes, int n, Point point, int token, int directionFrom) {
-        //first one check all direction
-        int count = 0;
-        int nextDIR = NOT_POSSIBLE;
-        //check right only if not on most right
-        if(directionFrom != LEFT && point.x != (n-1) && genes[point.y * n + (point.x+1)] == token ) {
-            count++;
-            nextDIR = RIGHT;
-        }
-        //check left only if not on most left
-        if(directionFrom != RIGHT && point.x != (0) && genes[point.y * n + (point.x-1)] == token ) {
-            count++;
-            nextDIR = LEFT;
-        }
-        //check up only if not on top
-        if(directionFrom != DOWN && point.y != (n-1) && genes[(point.y+1) * n + (point.x)] == token ) {
-            count++;
-            nextDIR = UP;
-        }
-        if(directionFrom != UP && point.y != (0) && genes[(point.y-1) * n + (point.x)] == token ) {
-            count++;
-            nextDIR = DOWN;
+    /*static Individual copyOnPathGenes(Individual newSol, Individual oldSol, int token) {
+        int[][] oldGenes = oldSol.getGenes();
+        boolean[][] visited = new boolean[oldGenes.length][oldGenes.length];
+
+        Point startingPoint = points[token*2];
+        Point endingPoint = points[(token*2)+1];
+
+        for (int i = 0; i < oldGenes.length; i++) {
+            for (int j = 0; j < oldGenes[i].length; j++) {
+                if(oldGenes[i][j] == token) {
+                    if(findLongestPath(oldGenes, visited, startingPoint.y, startingPoint.x, j, i, token, 0, 0) > 0) {
+                        newSol.setSingleGene(i, j, token);
+                    } else {
+                        newSol.setSingleGene(i, j, new Random().nextInt(oldGenes.length));
+                    }
+                }
+            }
         }
 
-        return count == 1 ? nextDIR : NOT_POSSIBLE;
+        return newSol;
     }*/
 }
