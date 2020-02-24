@@ -1,10 +1,15 @@
 package com.company;
 
+import com.company.GUI.MainFrame;
+
 import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        FlowFreeAlgo flowFreeAlgo = new FlowFreeAlgo();
+        MainFrame mainFrame = new MainFrame();
+        mainFrame.setVisible(true);
+
+        /*FlowFreeAlgo flowFreeAlgo = new FlowFreeAlgo();
 
         Point[] points = new Point[10];
         points[0]=new Point(0,0);
@@ -23,7 +28,7 @@ public class Main {
         //Number of individuals
         int populationSize = 100;
 
-        /*int[][] genes = new int[][] {
+        *//*int[][] genes = new int[][] {
                 {0, 1, 1, 4, 3},
                 {0, 1, 2, 3, 4},
                 {0, 1, 0, 3, 4},
@@ -32,9 +37,11 @@ public class Main {
         };
         boolean[][] visited = new boolean[n][n];
         System.out.println(findLongestPath(genes, visited, 0, 2, 1, 3, 1, 0, 0) + " token: " + 4);
-*/
-        flowFreeAlgo.runAlgorithm(populationSize, numberOfGenes, n, points);
+*//*
+        flowFreeAlgo.runAlgorithm(populationSize, numberOfGenes, n, points);*/
     }
+
+    /*
 
 
     // Find Longest Possible Route in a Matrix mat from source cell (0, 0) to
@@ -88,5 +95,5 @@ public class Main {
     // if not a valid position, return false
     static boolean isValid(int x, int y, int n) {
         return x < n && y < n && x >= 0 && y >= 0;
-    }
+    }*/
 }
