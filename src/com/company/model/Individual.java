@@ -12,11 +12,14 @@ public class Individual {
     protected int geneLength;
     private int[][] genes;
     private int fitness;
+    public boolean[] colorsDone;
 
     public Individual(int geneLength, int n, Point[] points) {
         this.n = n;
         this.geneLength = geneLength;
         this.genes = new int[n][n];
+
+        this.colorsDone = new boolean[this.n];
 
         Random rn = new Random();
 

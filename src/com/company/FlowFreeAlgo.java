@@ -92,6 +92,12 @@ public class FlowFreeAlgo {
                 }
             }
         }
+
+        /*for (int i = 0; i < newSol.getGenes().length; i++) {
+            for (int j = 0; j < newSol.getGenes()[i].length; j++) {
+                indiv1indiv1.colorsDone
+            }
+        }*/
         return newSol;
     }
 
@@ -125,6 +131,10 @@ public class FlowFreeAlgo {
     public static int getFitness(Individual individual) {
         int fitness = 0;
 
+        for (int i = 0; i < individual.colorsDone.length; i++) {
+            individual.colorsDone[i] = false;
+        }
+
         int n = individual.getN();
         int[][] genes = individual.getGenes();
         /*genes = new int[][] {
@@ -144,6 +154,7 @@ public class FlowFreeAlgo {
             //System.out.println(findLongestPath(genes, visited, startingPoint.x, startingPoint.y, endingPoint.x, endingPoint.y, i, 0, 0) + " token: " + i);
             if(findLongestPath(genes, visited, startingPoint.y, startingPoint.x, endingPoint.x, endingPoint.y, i, 0, 0) > 0) {
                 fitness++;
+                individual.colorsDone[i] = true;
             }
         }
         return fitness;
