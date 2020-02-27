@@ -68,9 +68,9 @@ public class FlowFreeAlgo {
             newPopulation.getIndividuals().add(i, new Individual(geneLength, n, points));
         }
 
-        /*for (int i = elitismOffset; i < newPopulation.getIndividuals().size(); i++) {
+        for (int i = elitismOffset; i < newPopulation.getIndividuals().size(); i++) {
             mutate(newPopulation.getIndividual(i));
-        }*/
+        }
 
         return newPopulation;
     }
@@ -112,12 +112,18 @@ public class FlowFreeAlgo {
 
 
     private void mutate(Individual indiv) {
-        /*for (int i = 0; i < indiv.getDefaultGeneLength(); i++) {
-            if (Math.random() <= mutationRate) {
-                byte gene = (byte) Math.round(Math.random());
-                indiv.setSingleGene(i, gene);
+        for (int i = 0; i < indiv.getGenes().length; i++) {
+            for (int j = 0; j < indiv.getGenes()[i].length; j++) {
+                if (Math.random() <= mutationRate) {
+                    indiv.setSingleGene(i, j, new Random().nextInt(this.n));
+                }
             }
-        }*/
+        }
+
+        //put right point in genes
+        for (int i = 0; i < points.length; i++) {
+            indiv.setSingleGene(points[i].y, points[i].x, (int) i/2);
+        }
     }
 
     private Individual tournamentSelection(Population pop) {

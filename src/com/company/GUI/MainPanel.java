@@ -60,7 +60,7 @@ public class MainPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int numberOfGenes = n * n;
-                int populationSize = 100;
+                int populationSize = 50;
 
                 Point[] points = new Point[n*2];
 
