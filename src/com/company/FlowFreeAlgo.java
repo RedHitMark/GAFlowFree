@@ -10,7 +10,7 @@ public class FlowFreeAlgo {
     private static final double uniformRate = 0.5;
     private static final double mutationRate = 0.1;
     private static final int tournamentSize = 10;
-    private static final boolean elitism = false;
+    private static final boolean elitism = true;
 
 
     private int maxFitness;
